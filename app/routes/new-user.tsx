@@ -31,8 +31,8 @@ const BG_SVG = (
 function ChevronArrow({ opacity = 1 }: { opacity?: number }) {
 	return (
 		<svg 
-			width="16" 
-			height="16" 
+			width="28" 
+			height="28" 
 			viewBox="0 0 16 16" 
 			fill="none" 
 			xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +40,7 @@ function ChevronArrow({ opacity = 1 }: { opacity?: number }) {
 		>
 			<path 
 				d="M4 10L8 6L12 10" 
-				stroke="#666" 
+			stroke="#000" 
 				strokeWidth="2" 
 				strokeLinecap="round" 
 				strokeLinejoin="round"
@@ -71,7 +71,7 @@ function GradientControl() {
 		
 		const currentY = e.touches[0].clientY;
 		const deltaY = startY - currentY; // Positive when swiping up
-		const maxDistance = 120; // Distance to middle chevron
+		const maxDistance = 100; // Distance to middle chevron
 		
 		// Constrain movement: only allow upward movement, max 120px
 		const constrainedDeltaY = Math.max(0, Math.min(maxDistance, deltaY));
@@ -97,10 +97,10 @@ function GradientControl() {
 	return (
 		<div style={{ 
 			position: "relative",
-			width: 175,
-			height: 300,
-			borderRadius: 30,
-			background: "linear-gradient(to bottom, rgba(118, 177, 5, 0.5) 20%, rgba(110, 164, 4, 0.5) 30%, rgba(101, 151, 4, 0.5) 40%, rgba(93, 139, 4, 0.5) 50%, rgba(84, 126, 3, 0.5) 60%, rgba(76, 113, 3, 0.5) 70%, rgba(67, 101, 3, 0.5) 80%, rgba(59, 88, 2, 0.5) 90%, rgba(50, 75, 2, 0.5))",
+			width: 135,
+			height: 261,
+			borderRadius: 66,
+			background: "rgba(50, 75, 2, 0.5)",
 			boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
 			display: "flex",
 			flexDirection: "column",
@@ -114,22 +114,31 @@ function GradientControl() {
 				display: "flex",
 				flexDirection: "column",
 				alignItems: "center",
-				gap: 12,
-				marginTop: 20
+				gap: 0,
+				marginTop: 20,
+				position: "relative",
+				zIndex: 0
 			}}>
-				<ChevronArrow opacity={0.3} />
-				<ChevronArrow opacity={0.5} />
-				<ChevronArrow opacity={0.8} />
+				<ChevronArrow opacity={1} />
+				<ChevronArrow opacity={1} />
+				<ChevronArrow opacity={1} />
 			</div>
 			
 			{/* Swipe area */}
 			<div 
 				style={{
 					position: "relative",
-					width: 120,
-					height: 110,
-					borderRadius: 35,
-					background: "linear-gradient(to top, #324B02 20%, #3B5802 30%, #436503 40%, #4C7103 50%, #547E03 60%, #5D8B04 70%, #659704 80%, #6EA404 90%, #76B105)",
+					width: 106,
+					height: 109,
+					minWidth: 106,
+					minHeight: 109,
+					boxSizing: "border-box",
+					flexShrink: 0,
+					flexGrow: 0,
+					flexBasis: "auto",
+					borderRadius: 66,
+					background: "#324B02",
+					opacity: 1,
 					boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1)",
 					display: "flex",
 					alignItems: "center",
@@ -138,7 +147,8 @@ function GradientControl() {
 					transition: pressed ? "none" : "all 0.3s ease",
 					transform: pressed ? `translateY(${-buttonPosition}px)` : "translateY(0px)",
 					overflow: "hidden",
-					marginBottom: 20
+					marginBottom: 20,
+					zIndex: 2
 				}}
 				onTouchStart={handleTouchStart}
 				onTouchMove={handleTouchMove}
@@ -163,8 +173,8 @@ function GradientControl() {
 function EchoviaImage() {
 	return (
 		<div style={{
-			width: 250,
-			height: 250,
+			width: 259,
+			height: 259,
 			display: "flex",
 			alignItems: "center",
 			justifyContent: "center",
