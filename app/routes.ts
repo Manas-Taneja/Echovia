@@ -4,7 +4,6 @@ export default [
 	index("routes/new-user.tsx"),
 	route("/login", "routes/login.tsx"),
 	route("/home", "routes/home.tsx"),
-	route("/checkin", "routes/checkin.tsx"),
 	route("/timeline", "routes/timeline.tsx"),
 	route("/knowledge", "routes/knowledge.tsx"),
 	route("/knowledge/:slug", "routes/knowledge.$slug.tsx"),

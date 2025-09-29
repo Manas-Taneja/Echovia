@@ -19,6 +19,38 @@ button, a, [role="button"], input, textarea, select, label {
 
 :root {
   --nav-height: 72px;
+  /* Echovia theme tokens (tuned to mockups) */
+  --eco-beige: #e6dcc5;
+  --eco-green: #3b5a1e; /* deep olive */
+  --eco-rose: #e9dfdc; /* soft pink/rose for blobs */
+  --eco-ink: #1c1b19;  /* near-black text */
+  --eco-shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 10px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Simple utility classes used by Home */
+.bg-eco-beige { background-color: var(--eco-beige) !important; }
+.bg-eco-green { background-color: var(--eco-green) !important; }
+.bg-eco-rose { background-color: var(--eco-rose) !important; }
+.text-eco-ink { color: var(--eco-ink) !important; }
+.shadow-eco { box-shadow: var(--eco-shadow) !important; }
+
+/* Bottom-only soft drop for small pills (NEXT CHECK-IN chip) */
+.shadow-bottom-pseudo { box-shadow: 0 3px 0 rgba(0,0,0,0.25), 0 8px 12px rgba(0,0,0,0.12) !important; }
+
+/* Divider tint used by SectionCard header */
+.border-eco-ink\/20 { border-color: rgba(28, 27, 25, 0.2) !important; }
+
+/* Organic blob card shape seen in mockups */
+.eco-blob {
+  /* Trapezoid-like blob with curved bottom to match mock */
+  clip-path: polygon(
+    15% 8%, 85% 8%,
+    97% 42%,
+    92% 62%, 85% 76%, 75% 86%,
+    67% 92%, 58% 96%, 50% 98%, 42% 96%, 33% 92%,
+    25% 86%, 15% 76%, 8% 62%,
+    3% 42%
+  );
 }
 
 /* DayPicker (RDP) theme overrides */

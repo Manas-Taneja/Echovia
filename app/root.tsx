@@ -72,6 +72,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="px-2 sm:px-0">
+        {/* Global background color + grain */}
+        <svg
+          className="fixed inset-0 -z-50 pointer-events-none"
+          width="100%"
+          height="100%"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <defs>
+            <filter id="paper-grain" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox" colorInterpolationFilters="sRGB">
+              <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="2" seed="572" result="noise"/>
+              <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/>
+              <feComponentTransfer in="alphaNoise" result="grain">
+                <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"/>
+              </feComponentTransfer>
+            </filter>
+          </defs>
+          <rect width="100%" height="100%" fill="#E8DCCA" />
+          <rect width="100%" height="100%" filter="url(#paper-grain)" opacity="0.02" />
+        </svg>
         {/* SVG Filter for Glass Distortion */}
         <svg style={{ display: "none" }}>
           <filter id="glass-distortion">
