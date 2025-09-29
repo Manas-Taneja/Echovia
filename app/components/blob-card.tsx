@@ -10,7 +10,7 @@ export default function BlobCard({ title, className, children }: Props) {
     <section
       className={["relative mx-auto text-center text-eco-ink", className ?? ""].join(" ")}
       aria-label={title}
-      style={{ width: "min(100%, 430.5px)", aspectRatio: "344 / 217" }}
+      style={{ width: "min(100%, 430.5px)", aspectRatio: "344 / 240" }}
     >
       {/* Exact trapezoid-with-rounded-corners shape from provided SVG */}
       <svg viewBox="0 0 344 217" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
