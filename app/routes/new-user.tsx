@@ -3,8 +3,8 @@ import type { Route } from "./+types/new-user";
 
 export function meta({}: Route.MetaArgs) {
 	return [
-		{ title: "Welcome • Aura-Aware" },
-		{ name: "description", content: "Welcome to Aura-Aware" },
+		{ title: "Welcome • Echovia" },
+		{ name: "description", content: "Welcome to Echovia" },
 	];
 }
 

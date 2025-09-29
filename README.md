@@ -1,4 +1,4 @@
-# Aura-Aware (Echovia) 🌸
+# Echovia 🌸
 
 A gentle, privacy-focused breast health awareness application that helps you stay connected to your body through monthly self-checks, daily logging, and educational resources.
 
@@ -41,7 +41,7 @@ A gentle, privacy-focused breast health awareness application that helps you sta
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd Aura-Aware
+   cd Echovia
    ```
 
 2. **Install dependencies**
@@ -111,7 +111,7 @@ app/
 
 ## 📱 Progressive Web App
 
-Aura-Aware is built as a Progressive Web App (PWA), which means:
+Echovia is built as a Progressive Web App (PWA), which means:
 
 - **Installable**: Add to your home screen like a native app
 - **Offline Support**: Works without internet connection
@@ -131,10 +131,10 @@ Aura-Aware is built as a Progressive Web App (PWA), which means:
 
 ```bash
 # Build the Docker image
-docker build -t aura-aware .
+docker build -t echovia .
 
 # Run the container
-docker run -p 3000:3000 aura-aware
+docker run -p 3000:3000 echovia
 ```
 
 ### Manual Deployment
@@ -164,7 +164,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## ⚠️ Medical Disclaimer
 
-**Important**: Aura-Aware is an educational tool and awareness application. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical concerns.
+**Important**: Echovia is an educational tool and awareness application. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical concerns.
 
 ## 🆘 Support
 
