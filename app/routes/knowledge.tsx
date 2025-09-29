@@ -1,8 +1,13 @@
+import { useEffect } from "react"
 import SearchBar from "../components/search-bar"
 import SectionGrid from "../components/section-grid"
 import WideCard from "../components/wide-card"
 
 export default function KnowledgePage() {
+  useEffect(() => {
+    // Ensure page loads at top; override any restoration quirks
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+  }, [])
   return (
     <main className="min-h-dvh pb-24 pt-0 -mt-4 mt-[2px] bg-eco-beige">
       {/* Header */}
