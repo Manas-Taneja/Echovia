@@ -60,39 +60,41 @@ function GradientControl() {
 		// Navigate to login page
 		window.location.href = "/login";
 	};
-	
-	const handleTouchStart = (e: React.TouchEvent) => {
-		setStartY(e.touches[0].clientY);
+
+	// Use Pointer Events for consistent behavior in PWA/standalone and mobile browsers
+	const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+		setStartY(e.clientY);
 		setPressed(true);
+		// Ensure we keep receiving move events even if the pointer leaves the element
+		try { (e.currentTarget as Element).setPointerCapture?.(e.pointerId); } catch {}
 	};
-	
-	const handleTouchMove = (e: React.TouchEvent) => {
+
+	const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
 		if (!pressed) return;
-		
-		const currentY = e.touches[0].clientY;
+		const currentY = e.clientY;
 		const deltaY = startY - currentY; // Positive when swiping up
 		const maxDistance = 100; // Distance to middle chevron
-		
-		// Constrain movement: only allow upward movement, max 120px
 		const constrainedDeltaY = Math.max(0, Math.min(maxDistance, deltaY));
 		const progress = constrainedDeltaY / maxDistance;
-		
 		setSwipeProgress(progress);
 		setButtonPosition(constrainedDeltaY);
 	};
-	
-	const handleTouchEnd = () => {
+
+	const endInteraction = (e?: React.PointerEvent<HTMLDivElement>) => {
 		if (swipeProgress > 0.8) {
-			// Swipe threshold reached - navigate to login
 			handleGoClick();
 		}
-		
-		// Reset state
 		setPressed(false);
 		setSwipeProgress(0);
 		setButtonPosition(0);
 		setStartY(0);
+		if (e) {
+			try { (e.currentTarget as Element).releasePointerCapture?.(e.pointerId); } catch {}
+		}
 	};
+
+	const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => endInteraction(e);
+	const handlePointerCancel = (e: React.PointerEvent<HTMLDivElement>) => endInteraction(e);
 	
 	return (
 		<div style={{ 
@@ -148,11 +150,16 @@ function GradientControl() {
 					transform: pressed ? `translateY(${-buttonPosition}px)` : "translateY(0px)",
 					overflow: "hidden",
 					marginBottom: 20,
-					zIndex: 2
+					zIndex: 2,
+					// Prevent the browser from treating vertical swipes as scroll gestures
+					touchAction: "none",
+					userSelect: "none"
 				}}
-				onTouchStart={handleTouchStart}
-				onTouchMove={handleTouchMove}
-				onTouchEnd={handleTouchEnd}
+				onPointerDown={handlePointerDown}
+				onPointerMove={handlePointerMove}
+				onPointerUp={handlePointerUp}
+				onPointerCancel={handlePointerCancel}
+				onContextMenu={(e) => e.preventDefault()}
 			>
 				<span style={{
 					color: "#fff",
