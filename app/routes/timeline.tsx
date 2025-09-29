@@ -72,18 +72,19 @@ export default function Timeline() {
 		<ProtectedRoute>
 			<main className="p-4 sm:p-6 mx-auto max-w-xl sm:max-w-4xl overflow-hidden">
 			<header className="mb-4">
-				<h1 className="text-2xl font-semibold">Health Timeline</h1>
+				<h1 className="text-black text-2xl font-semibold">Health Timeline</h1>
 			</header>
 
-			<section>
+			<section className="flex items-center justify-center" style={{ minHeight: "60vh" }}>
 				<div className="glass-card calendar-card rdp-root">
 					<div className="glass-filter" />
 					<div className="glass-overlay" />
 					<div className="glass-specular" />
-					<div className="glass-content" style={{ padding: 2, display: "flex", justifyContent: "center" }}>
-						<DayPicker
+					<div className="glass-content" style={{ padding: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
+						<DayPicker navLayout="around"
 							classNames={(function(){ const d = getDefaultClassNames(); return { ...d, root: d.root + " rdp-root" }; })()}
-							style={{ ['--rdp-accent-color' as any]: 'yellowgreen', ['--rdp-day_button-width' as any]: `${daySize}px`, ['--rdp-day_button-height' as any]: `${daySize}px`, ['--rdp-day_button-border-radius' as any]: '8px' }}
+						style={{ ['--rdp-accent-color' as any]: 'var(--eco-green)', ['--rdp-day_button-width' as any]: `${daySize}px`, ['--rdp-day_button-height' as any]: `${daySize}px`, ['--rdp-day_button-border-radius' as any]: '8px', margin: '0 auto' }}
+						numberOfMonths={1}
 							month={new Date(year, month, 1)}
 							onMonthChange={(d) => { setYear(d.getFullYear()); setMonth(d.getMonth()); }}
 							showOutsideDays

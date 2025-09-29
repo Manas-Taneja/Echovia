@@ -34,6 +34,10 @@ button, a, [role="button"], input, textarea, select, label {
 .text-eco-ink { color: var(--eco-ink) !important; }
 .shadow-eco { box-shadow: var(--eco-shadow) !important; }
 
+/* Hide scrollbars for mobile carousels */
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
 /* Bottom-only soft drop for small pills (NEXT CHECK-IN chip) */
 .shadow-bottom-pseudo { box-shadow: 0 3px 0 rgba(0,0,0,0.25), 0 8px 12px rgba(0,0,0,0.12) !important; }
 
@@ -55,8 +59,7 @@ button, a, [role="button"], input, textarea, select, label {
 
 /* DayPicker (RDP) theme overrides */
 .rdp-root {
-  --rdp-accent-color: yellowgreen
-  ;
+  --rdp-accent-color: var(--eco-green);
 }
 
 html,
@@ -437,6 +440,10 @@ select:focus, select:focus-visible {
 /* Center the scaled calendar content */
 .calendar-card { align-items: center !important; }
 .calendar-card .rdp { margin: 0 auto; display: block; }
+
+/* Timeline: stack multiple months in a column */
+.rdp-col .rdp-months { flex-direction: column; align-items: center; gap: 12px; }
+.rdp-col .rdp-month { width: auto; }
 
 /* Remove outlines/rings on select (and similar focus styles) */
 select,

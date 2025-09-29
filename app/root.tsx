@@ -71,7 +71,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="px-2 sm:px-0">
+      <body>
         {/* Global background color + grain */}
         <svg
           className="fixed inset-0 -z-50 pointer-events-none"

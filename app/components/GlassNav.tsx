@@ -20,8 +20,8 @@ export function GlassNav() {
                             </svg>
                         </div>
                     </NavLink>
-                    {/* Check-in */}
-                    <NavLink to="/checkin" className={({ isActive }) => `glass-icon${isActive ? " active" : ""}`}>
+                    {/* About the App */}
+                    <NavLink to="/about-the-app" className={({ isActive }) => `glass-icon${isActive ? " active" : ""}`}>
                         <div className="glass-filter" />
                         <div className="glass-overlay" />
                         <div className="glass-specular" />
@@ -29,18 +29,6 @@ export function GlassNav() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M9 12l2 2 4-4" />
                                 <rect x="3" y="4" width="18" height="16" rx="2" ry="2" />
-                            </svg>
-                        </div>
-                    </NavLink>
-                    {/* Timeline */}
-                    <NavLink to="/timeline" className={({ isActive }) => `glass-icon${isActive ? " active" : ""}`}>
-                        <div className="glass-filter" />
-                        <div className="glass-overlay" />
-                        <div className="glass-specular" />
-                        <div className="glass-content">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="12" cy="12" r="9" />
-                                <path d="M12 7v5l3 3" />
                             </svg>
                         </div>
                     </NavLink>
@@ -53,6 +41,18 @@ export function GlassNav() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
                                 <path d="M20 22V6a2 2 0 00-2-2H7a3 3 0 00-3 3v12" />
+                            </svg>
+                        </div>
+                    </NavLink>
+                    {/* Settings */}
+                    <NavLink to="/settings" className={({ isActive }) => `glass-icon${isActive ? " active" : ""}`}>
+                        <div className="glass-filter" />
+                        <div className="glass-overlay" />
+                        <div className="glass-specular" />
+                        <div className="glass-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 3" />
                             </svg>
                         </div>
                     </NavLink>

@@ -11,11 +11,26 @@ export default function Home() {
   const yy = String(now.getFullYear()).slice(-2)
   const todayLabel = `${mm}/${dd}/${yy}`
 
+  // Generate two random dates one month apart
+  const formatDate = (d: Date) => {
+    const m = String(d.getMonth() + 1).padStart(2, "0")
+    const day = String(d.getDate()).padStart(2, "0")
+    const y = String(d.getFullYear()).slice(-2)
+    return `${m}/${day}/${y}`
+  }
+  const base = new Date()
+  base.setMonth(base.getMonth() - (1 + Math.floor(Math.random() * 6)))
+  base.setDate(base.getDate() - Math.floor(Math.random() * 27))
+  const date1Label = formatDate(base)
+  const date2 = new Date(base)
+  date2.setMonth(date2.getMonth() + 1)
+  const date2Label = formatDate(date2)
+
   return (
     <>
       {/* Use global root background with grain; no local background override */}
       <main className="min-h-dvh">
-      <div className="mx-auto max-w-md px-4 pb-20 pt-4">
+      <div className="mx-auto max-w-md px-4 pb-20 pt-0 -mt-4 mt-[2px]">
         <TopNav greeting="Hello, Luna" />
 
         <div className="mt-2 flex flex-col items-center">
@@ -133,8 +148,8 @@ export default function Home() {
                   <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
                   <rect width="100%" height="100%" filter="url(#pill-grain-1)" opacity="0.02" rx="26" ry="26" />
                 </svg>
-                <span className="opacity-95">Latest Scan</span>
-                <button className="underline underline-offset-2 opacity-95" type="button">Report</button>
+                <span className="opacity-95">Latest scan</span>
+                <button className="underline underline-offset-2 opacity-95" type="button">View report</button>
               </div>
               <div className="relative text-black flex items-center justify-between rounded-[26px] px-5 py-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
                 <svg className="absolute inset-0 -z-10" width="100%" height="100%" preserveAspectRatio="none" aria-hidden>
@@ -150,8 +165,12 @@ export default function Home() {
                   <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
                   <rect width="100%" height="100%" filter="url(#pill-grain-2)" opacity="0.02" rx="26" ry="26" />
                 </svg>
-                <span className="opacity-95">Previous Scan</span>
-                <button className="underline underline-offset-2 opacity-95" type="button">Report</button>
+                <span className="opacity-95">View all</span>
+                <button className="opacity-95 p-1" aria-label="View all" type="button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-black">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
               </div>
             </div>
           </ScanPanel>
@@ -175,7 +194,7 @@ export default function Home() {
                   <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
                   <rect width="100%" height="100%" filter="url(#pill-grain-3)" opacity="0.02" rx="26" ry="26" />
                 </svg>
-                <span className="opacity-95">Latest Scan</span>
+                <span className="opacity-95">{date1Label}</span>
                 <button className="underline underline-offset-2 opacity-95" type="button">Report</button>
               </div>
               <div className="relative text-black flex items-center justify-between rounded-[26px] px-5 py-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
@@ -192,7 +211,7 @@ export default function Home() {
                   <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
                   <rect width="100%" height="100%" filter="url(#pill-grain-4)" opacity="0.02" rx="26" ry="26" />
                 </svg>
-                <span className="opacity-95">Previous Scan</span>
+                <span className="opacity-95">{date2Label}</span>
                 <button className="underline underline-offset-2 opacity-95" type="button">Report</button>
               </div>
             </div>
