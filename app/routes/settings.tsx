@@ -6,7 +6,7 @@ export default function SettingsPage() {
 
   return (
     <main className="min-h-dvh bg-eco-beige">
-      <div className="mx-auto max-w-[520px] px-5 pb-24">
+      <div className="mx-auto max-w-[520px] px-5 pb-0">
         <header className="mb-6">
           <h1 className="text-black text-3xl font-semibold">Settings</h1>
           <p className="text-black/70 text-sm mt-1">Manage your account and preferences</p>

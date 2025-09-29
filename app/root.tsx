@@ -146,12 +146,17 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
   const isNewUserPage = location.pathname === "/";
+  const isHomePage = location.pathname === "/home";
+  const isAboutPage = location.pathname === "/about-the-app";
   const shouldHideNavbar = isLoginPage || isNewUserPage;
   
   return (
     <div className="container mx-auto px-4 app-viewport">
       {!shouldHideNavbar && <GlassNav />}
-      <div className={shouldHideNavbar ? "" : "pt-4 app-content"}>
+      <div
+        className={shouldHideNavbar ? "" : "pt-4 app-content"}
+        style={{ ["--app-content-padding-bottom" as any]: (isHomePage || isAboutPage) ? "0px" : undefined }}
+      >
         {children}
       </div>
     </div>

@@ -29,8 +29,8 @@ export default function Home() {
   return (
     <>
       {/* Use global root background with grain; no local background override */}
-      <main className="min-h-dvh">
-      <div className="mx-auto max-w-md px-4 pb-20 pt-0 -mt-4 mt-[2px]">
+      <main className="min-h-dvh" style={{ ["--app-content-padding-bottom" as any]: "0px" }}>
+      <div className="mx-auto max-w-md px-4 pb-20 pt- -mt-4 mt-[2px]">
         <TopNav greeting="Hello, Luna" />
 
         <div className="mt-2 flex flex-col items-center">
@@ -39,7 +39,7 @@ export default function Home() {
 
         {/* Slim green bar */}
         <div className="mt-4">
-          <SectionCard title="Feel your Lumps, Save your Bumps" size="bar" className="text-center flex items-center justify-center" />
+          <SectionCard title="Feel your Lumps, Save your Bumps" size="bar" className="text-xs pt-4 text-center flex items-center justify-center" />
         </div>
 
         {/* Checking In blob with daily emojis and action */}
@@ -89,41 +89,14 @@ export default function Home() {
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 101 36"
+                    viewBox="0 0 101 28"
                     className="absolute inset-0 h-full w-full"
                     preserveAspectRatio="none"
                     aria-hidden
                   >
-                    <g filter="url(#filter0_dn_2037_134)">
-                      <path d="M4 14C4 6.26801 10.268 0 18 0H83C90.732 0 97 6.26801 97 14C97 21.732 90.732 28 83 28H18C10.268 28 4 21.732 4 14Z" fill="#324B02" fillOpacity="0.9" shapeRendering="crispEdges"/>
-                    </g>
-                    <defs>
-                      <filter id="filter0_dn_2037_134" x="0" y="0" width="101" height="36" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-                        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                        <feOffset dy="4"/>
-                        <feGaussianBlur stdDeviation="2"/>
-                        <feComposite in2="hardAlpha" operator="out"/>
-                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-                        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2037_134"/>
-                        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-                        <feTurbulence type="fractalNoise" baseFrequency="2 2" stitchTiles="stitch" numOctaves="3" result="noise" seed="6073"/>
-                        <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/>
-                        <feComponentTransfer in="alphaNoise" result="coloredNoise1">
-                          <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
-                        </feComponentTransfer>
-                        <feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/>
-                        <feFlood floodColor="rgba(0, 0, 0, 0.1)" result="color1Flood"/>
-                        <feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/>
-                        <feMerge result="effect2_noise_2037_134">
-                          <feMergeNode in="shape"/>
-                          <feMergeNode in="color1"/>
-                        </feMerge>
-                        <feBlend mode="normal" in="effect2_noise_2037_134" in2="effect1_dropShadow_2037_134" result="effect2_noise_2037_134"/>
-                      </filter>
-                    </defs>
+                    <path d="M4 14C4 6.26801 10.268 0 18 0H83C90.732 0 97 6.26801 97 14C97 21.732 90.732 28 83 28H18C10.268 28 4 21.732 4 14Z" fill="#324B02" fillOpacity="0.9" shapeRendering="crispEdges"/>
                   </svg>
-                  <span className="relative z-10 leading-none" style={{ lineHeight: 1, transform: "translateY(-0.5px)" }}>Log scan</span>
+                  <span className="relative z-10 leading-none" style={{ lineHeight: "28px" }}>Log scan</span>
                 </button>
               </div>
             </div>

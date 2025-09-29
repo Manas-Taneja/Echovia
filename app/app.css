@@ -97,7 +97,8 @@ select:focus, select:focus-visible {
 
 /* Reserve space for bottom navbar so content doesn't hide behind it */
 .app-content {
-  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+  /* Allow per-page override via --app-content-padding-bottom */
+  padding-bottom: var(--app-content-padding-bottom, calc(var(--nav-height) + env(safe-area-inset-bottom, 0px)));
 }
 
 /* Glass Navigation Styles */

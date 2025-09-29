@@ -5,7 +5,7 @@ import WideCard from "../components/wide-card"
 export default function AboutTheAppPage() {
   return (
     <main
-      className="min-h-dvh pb-24 pt-0 -mt-4 mt-[2px] bg-eco-beige"
+      className="min-h-dvh pb-12 pt-0 -mt-4 mt-[2px] bg-eco-beige"
     >
       {/* Header */}
       <header className="text-black text-center mb-6">

@@ -9,7 +9,7 @@ export default function KnowledgePage() {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" })
   }, [])
   return (
-    <main className="min-h-dvh pb-24 pt-0 -mt-4 mt-[2px] bg-eco-beige">
+    <main className="min-h-dvh pb-0 pt-0 -mt-4 mt-[2px] bg-eco-beige">
       {/* Header */}
       <header className="text-center mb-6">
         <h1 className="text-black text-3xl font-semibold tracking-tight text-pretty">Knowledge Center</h1>
