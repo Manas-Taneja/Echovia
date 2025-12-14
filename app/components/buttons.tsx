@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 type GlassButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     children: React.ReactNode;
