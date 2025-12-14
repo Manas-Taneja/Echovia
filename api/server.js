@@ -1,12 +1,15 @@
-import { createRequestHandler } from "@react-router/node";
 import * as build from "../build/server/index.js";
+import { createRequestListener } from "@react-router/node";
 
-const handler = createRequestHandler({
+const handleRequest = build.entry.module.default;
+
+const listener = createRequestListener({
   build,
-  mode: process.env.NODE_ENV,
+  mode: process.env.NODE_ENV || "production",
+  getLoadContext: () => ({}),
 });
 
 export default async function(req, res) {
-  return handler(req, res);
+  return listener(req, res);
 }
 
