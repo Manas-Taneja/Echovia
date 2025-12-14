@@ -16,11 +16,10 @@ export default function Home() {
   const [motionError, setMotionError] = useState<string | null>(null)
   const [sensorConsent, setSensorConsent] = useState<"unknown" | "granted" | "dismissed">("unknown")
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
-  const [torchOn, setTorchOn] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
   const simTimerRef = useRef<number | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
-  const motionHandlerRef = useRef<(ev: DeviceMotionEvent) => void>()
+  const motionHandlerRef = useRef<((ev: DeviceMotionEvent) => void) | undefined>(undefined)
 
   const now = new Date()
   const mm = String(now.getMonth() + 1).padStart(2, "0")
@@ -85,6 +84,7 @@ export default function Home() {
 
   function startSimulatedScan() {
     if (simStatus === "scanning") return
+    if (connectState !== "connected") return
     setSimStatus("scanning")
     setSimProgress(0)
     const start = performance.now()
@@ -143,6 +143,10 @@ export default function Home() {
   }
 
   async function startMotionListener() {
+    if (connectState !== "connected") {
+      setMotionError("Please connect Echovia device first.")
+      return
+    }
     setMotionError(null)
     const ok = await ensureMotionPermission()
     if (!ok) return
@@ -155,11 +159,11 @@ export default function Home() {
       const gamma = Math.abs(ev.rotationRate?.gamma || 0)
       const magnitude = alpha + beta + gamma
       const nowTs = performance.now()
-      if (magnitude > 45 && nowTs - lastBoost > 150) {
-        setMotionProgress((p: number) => Math.min(100, p + 8))
+      if (magnitude > 45 && nowTs - lastBoost > 300) {
+        setMotionProgress((p: number) => Math.min(100, p + 3))
         lastBoost = nowTs
-      } else if (magnitude > 20 && nowTs - lastBoost > 250) {
-        setMotionProgress((p: number) => Math.min(100, p + 4))
+      } else if (magnitude > 20 && nowTs - lastBoost > 500) {
+        setMotionProgress((p: number) => Math.min(100, p + 1.5))
         lastBoost = nowTs
       }
     }
@@ -200,12 +204,6 @@ export default function Home() {
         videoRef.current.srcObject = stream
         void videoRef.current.play()
       }
-      // turn torch on by default if supported
-      const caps = track.getCapabilities?.()
-      if (caps && "torch" in caps) {
-        await track.applyConstraints({ advanced: [{ torch: true } as MediaTrackConstraintSet] })
-        setTorchOn(true)
-      }
     } catch (err) {
       if (err instanceof Error) {
         if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
@@ -224,23 +222,6 @@ export default function Home() {
   function stopCamera() {
     cameraStream?.getTracks().forEach((t: MediaStreamTrack) => t.stop())
     setCameraStream(null)
-    setTorchOn(false)
-  }
-
-  async function toggleTorch() {
-    if (!cameraStream) return
-    const track = cameraStream.getVideoTracks()[0]
-    const caps = track.getCapabilities?.()
-    if (!caps || !("torch" in caps)) {
-      setCameraError("Torch not supported on this device.")
-      return
-    }
-    try {
-      await track.applyConstraints({ advanced: [{ torch: !torchOn } as MediaTrackConstraintSet] })
-      setTorchOn((v: boolean) => !v)
-    } catch {
-      setCameraError("Unable to toggle flashlight.")
-    }
   }
 
   async function enableSensorProxy() {
@@ -293,19 +274,19 @@ export default function Home() {
 
               <div className="flex items-center justify-center gap-8">
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-2xl">😊</div>
+                  <div className="text-2xl">•</div>
                   <div className="text-xs text-eco-ink/70">Good</div>
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-2xl">😖</div>
+                  <div className="text-2xl">•</div>
                   <div className="text-xs text-eco-ink/70">Uneasy</div>
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-2xl">💧</div>
+                  <div className="text-2xl">•</div>
                   <div className="text-xs text-eco-ink/70">Swelling</div>
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-2xl">🌙</div>
+                  <div className="text-2xl">•</div>
                   <div className="text-xs text-eco-ink/70">Fatigue</div>
                 </div>
               </div>
@@ -327,97 +308,6 @@ export default function Home() {
 
             </div>
           </BlobCard>
-        </div>
-
-        <div className="mt-6 flex justify-center">
-          <ScanPanel title="Digital Twin (Simulated Device)" className="text-sm" style={{ minHeight: 140 }}>
-            <div className="space-y-3 text-eco-ink">
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-eco-ink/70">Status</p>
-                  <p className="text-sm font-medium">
-                    {simStatus === "scanning" ? "Scanning..." : `Scenario: ${scenarios[scenarioIndex].name}`}
-                  </p>
-                  <p className="text-[12px] text-eco-ink/70">{scenarios[scenarioIndex].detail}</p>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  <button
-                    type="button"
-                    onClick={startSimulatedScan}
-                    className="px-4 py-2 rounded-full bg-white text-eco-ink text-xs font-semibold shadow-bottom-pseudo"
-                    disabled={simStatus === "scanning"}
-                  >
-                    {simStatus === "scanning" ? "Scanning..." : "Run Simulated Scan"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleConnect}
-                    className="px-4 py-1.5 rounded-full bg-eco-green text-white text-[11px]"
-                  >
-                    {connectState === "searching" ? "Searching..." : connectState === "connected" ? "Connected" : "Connect Echovia"}
-                  </button>
-                </div>
-              </div>
-              <div className="h-2 w-full rounded-full bg-eco-ink/10 overflow-hidden">
-                <div
-                  className="h-full bg-eco-green transition-all"
-                  style={{ width: `${simStatus === "done" ? 100 : simProgress}%` }}
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-[11px] text-eco-ink/70">
-                <span>Guidance: {scenarios[scenarioIndex].guidance}</span>
-                <span className="text-right col-span-2">
-                  Status: {simStatus === "scanning" ? "Scanning..." : simStatus === "done" ? "Stream ready" : "Idle"}
-                </span>
-              </div>
-            </div>
-          </ScanPanel>
-        </div>
-
-        {/* Your Scans */}
-        <div className="mt-6 flex justify-center">
-          <ScanPanel title="Your Scans">
-            <div className="space-y-4 text-sm">
-              <div className="relative text-black flex items-center justify-between rounded-[26px] px-5 py-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
-                <svg className="absolute inset-0 -z-10" width="100%" height="100%" preserveAspectRatio="none" aria-hidden>
-                  <defs>
-                    <filter id="pill-grain-1" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox" colorInterpolationFilters="sRGB">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="2" seed="111" result="noise"/>
-                      <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/>
-                      <feComponentTransfer in="alphaNoise" result="grain">
-                        <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"/>
-                      </feComponentTransfer>
-                    </filter>
-                  </defs>
-                  <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
-                  <rect width="100%" height="100%" filter="url(#pill-grain-1)" opacity="0.02" rx="26" ry="26" />
-                </svg>
-                <span className="opacity-95">Latest scan</span>
-                <button className="underline underline-offset-2 opacity-95" type="button">View report</button>
-              </div>
-              <div className="relative text-black flex items-center justify-between rounded-[26px] px-5 py-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
-                <svg className="absolute inset-0 -z-10" width="100%" height="100%" preserveAspectRatio="none" aria-hidden>
-                  <defs>
-                    <filter id="pill-grain-2" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox" colorInterpolationFilters="sRGB">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="2" seed="222" result="noise"/>
-                      <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/>
-                      <feComponentTransfer in="alphaNoise" result="grain">
-                        <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"/>
-                      </feComponentTransfer>
-                    </filter>
-                  </defs>
-                  <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
-                  <rect width="100%" height="100%" filter="url(#pill-grain-2)" opacity="0.02" rx="26" ry="26" />
-                </svg>
-                <span className="opacity-95">View all</span>
-                <button className="opacity-95 p-1" aria-label="View all" type="button">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-black">
-                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </ScanPanel>
         </div>
 
         <div className="mt-6 flex justify-center">
@@ -470,7 +360,8 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={motionActive ? stopMotionListener : startMotionListener}
-                        className="px-3 py-2 rounded-full bg-white/80 text-eco-ink text-xs font-semibold"
+                        className="px-3 py-2 rounded-full bg-white/80 text-eco-ink text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!motionActive && connectState !== "connected"}
                       >
                         {motionActive ? "Pause" : motionProgress >= 100 ? "Restart" : "Start"}
                       </button>
@@ -487,29 +378,19 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-black/40 border border-white/20 overflow-hidden relative">
+                  <div className="rounded-xl bg-black/40 border border-white/20 overflow-hidden relative mt-4 mb-4">
                     <div className="flex items-center justify-between px-3 py-2">
                       <div>
-                        <p className="text-xs uppercase tracking-wide text-white/70">Camera + Torch</p>
+                        <p className="text-xs uppercase tracking-wide text-white/70">Camera</p>
                         <p className="text-sm font-medium text-white">Live heatmap preview</p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={cameraStream ? stopCamera : startCamera}
-                          className="px-3 py-1 rounded-full bg-white/80 text-eco-ink text-xs font-semibold"
-                        >
-                          {cameraStream ? "Stop" : "Start"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={toggleTorch}
-                          className="px-3 py-1 rounded-full bg-white/15 text-white text-xs"
-                          disabled={!cameraStream}
-                        >
-                          {torchOn ? "Flash On" : "Flash Off"}
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={cameraStream ? stopCamera : startCamera}
+                        className="px-3 py-1 rounded-full bg-white/80 text-eco-ink text-xs font-semibold"
+                      >
+                        {cameraStream ? "Stop" : "Start"}
+                      </button>
                     </div>
                     <div className="relative aspect-video bg-black/60">
                       <video
@@ -534,15 +415,54 @@ export default function Home() {
           </ScanPanel>
         </div>
 
-        {/* Scan History */}
         <div className="mt-6 flex justify-center">
-          <ScanPanel title="Scan History">
+          <ScanPanel title="Digital Twin (Simulated Device)" className="text-sm" style={{ minHeight: 140 }}>
+            <div className="space-y-3 text-white">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-white/70">Status</p>
+                <p className="text-sm font-medium text-white">
+                  {simStatus === "scanning" ? "Scanning..." : `Scenario: ${scenarios[scenarioIndex].name}`}
+                </p>
+                <p className="text-[12px] text-white/70">{scenarios[scenarioIndex].detail}</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={startSimulatedScan}
+                  className="px-4 py-2 rounded-full bg-white text-eco-ink text-xs font-semibold shadow-bottom-pseudo disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={simStatus === "scanning" || connectState !== "connected"}
+                >
+                  {simStatus === "scanning" ? "Scanning..." : "Run Simulated Scan"}
+                </button>
+              </div>
+              <div className="h-2 w-full rounded-full bg-eco-ink/10 overflow-hidden">
+                <div
+                  className="h-full bg-eco-green transition-all"
+                  style={{ width: `${simStatus === "done" ? 100 : simProgress}%` }}
+                />
+              </div>
+              <div className="flex flex-col gap-1 text-[11px] text-white/70">
+                <div className="flex items-center justify-between">
+                  <span>Guidance:</span>
+                  <span className="text-right">
+                    Status: {simStatus === "scanning" ? "Scanning..." : simStatus === "done" ? "Stream ready" : "Idle"}
+                  </span>
+                </div>
+                <p className="text-white/90">{scenarios[scenarioIndex].guidance}</p>
+              </div>
+            </div>
+          </ScanPanel>
+        </div>
+
+        {/* Your Scans */}
+        <div className="mt-6 flex justify-center">
+          <ScanPanel title="Your Scans">
             <div className="space-y-4 text-sm">
               <div className="relative text-black flex items-center justify-between rounded-[26px] px-5 py-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
                 <svg className="absolute inset-0 -z-10" width="100%" height="100%" preserveAspectRatio="none" aria-hidden>
                   <defs>
-                    <filter id="pill-grain-3" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox" colorInterpolationFilters="sRGB">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="2" seed="333" result="noise"/>
+                    <filter id="pill-grain-1" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox" colorInterpolationFilters="sRGB">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="2" seed="111" result="noise"/>
                       <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/>
                       <feComponentTransfer in="alphaNoise" result="grain">
                         <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"/>
@@ -550,16 +470,16 @@ export default function Home() {
                     </filter>
                   </defs>
                   <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
-                  <rect width="100%" height="100%" filter="url(#pill-grain-3)" opacity="0.02" rx="26" ry="26" />
+                  <rect width="100%" height="100%" filter="url(#pill-grain-1)" opacity="0.02" rx="26" ry="26" />
                 </svg>
-                <span className="opacity-95">{date1Label}</span>
-                <button className="underline underline-offset-2 opacity-95" type="button">Report</button>
+                <span className="opacity-95">Latest scan</span>
+                <button className="underline underline-offset-2 opacity-95" type="button">View report</button>
               </div>
               <div className="relative text-black flex items-center justify-between rounded-[26px] px-5 py-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
                 <svg className="absolute inset-0 -z-10" width="100%" height="100%" preserveAspectRatio="none" aria-hidden>
                   <defs>
-                    <filter id="pill-grain-4" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox" colorInterpolationFilters="sRGB">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="2" seed="444" result="noise"/>
+                    <filter id="pill-grain-2" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox" colorInterpolationFilters="sRGB">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="2" seed="222" result="noise"/>
                       <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/>
                       <feComponentTransfer in="alphaNoise" result="grain">
                         <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"/>
@@ -567,10 +487,14 @@ export default function Home() {
                     </filter>
                   </defs>
                   <rect width="100%" height="100%" fill="#E8DCCA" rx="26" ry="26" />
-                  <rect width="100%" height="100%" filter="url(#pill-grain-4)" opacity="0.02" rx="26" ry="26" />
+                  <rect width="100%" height="100%" filter="url(#pill-grain-2)" opacity="0.02" rx="26" ry="26" />
                 </svg>
-                <span className="opacity-95">{date2Label}</span>
-                <button className="underline underline-offset-2 opacity-95" type="button">Report</button>
+                <span className="opacity-95">View all</span>
+                <button className="opacity-95 p-1" aria-label="View all" type="button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-black">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
               </div>
             </div>
           </ScanPanel>

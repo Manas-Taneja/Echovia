@@ -70,6 +70,7 @@ export default function SettingsPage() {
             <div className="px-4 py-4">
               <p className="text-black">Echovia App</p>
               <p className="text-black/70 text-sm">Version 1.0.0</p>
+              <p className="text-black/70 text-sm">Designed by Raamya Singh (220BDES007)</p>
             </div>
           </div>
         </section>

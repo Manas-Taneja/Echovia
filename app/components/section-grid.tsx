@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 type Item = { label: string }
 
@@ -7,33 +7,114 @@ export default function SectionGrid({ items, largeFirst = false, carousel = fals
 
   // Variant A: horizontal carousel of rectangles
   if (carousel) {
-    // Center the middle item initially so it's obvious this is a carousel
+    // Create duplicated items array for infinite scrolling (3 sets: [original, original, original])
+    const duplicatedItems = [...items, ...items, ...items]
+    
     const containerRef = useRef<HTMLDivElement>(null)
-    const middleIndex = Math.floor(items.length / 2)
-    const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+    const innerRef = useRef<HTMLDivElement>(null)
+    const isAdjustingRef = useRef(false)
+    const [isInitialized, setIsInitialized] = useState(false)
 
+    // Initialize scroll position to middle set
     useEffect(() => {
       const container = containerRef.current
-      const middleEl = itemRefs.current?.[middleIndex] ?? null
-      if (!container || !middleEl) return
-      // Use scrollIntoView with inline:center for modern browsers
-      try {
-        middleEl.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" })
-      } catch {
-        // Fallback: compute approximate center
-        const containerRect = container.getBoundingClientRect()
-        const itemRect = middleEl.getBoundingClientRect()
-        const offset = (itemRect.left + itemRect.width / 2) - (containerRect.left + containerRect.width / 2)
-        container.scrollLeft += offset
+      const inner = innerRef.current
+      if (!container || !inner || isInitialized) return
+
+      // Wait for layout to be ready
+      const initScroll = () => {
+        if (!container || !inner) return
+        
+        // Calculate the width of one set of items
+        const firstItem = inner.children[1] as HTMLElement // Skip the first padding div
+        if (!firstItem) return
+        
+        const itemWidth = firstItem.offsetWidth
+        const gap = 20 // gap-5 = 1.25rem = 20px
+        const itemWidthWithGap = itemWidth + gap
+        const oneSetWidth = items.length * itemWidthWithGap
+        
+        // Scroll to start of middle set (second set)
+        container.scrollLeft = oneSetWidth
+        setIsInitialized(true)
       }
-    }, [items.length, middleIndex])
+
+      // Use requestAnimationFrame to ensure layout is ready
+      requestAnimationFrame(() => {
+        requestAnimationFrame(initScroll)
+      })
+    }, [items.length, isInitialized])
+
+    // Handle infinite scroll
+    useEffect(() => {
+      const container = containerRef.current
+      const inner = innerRef.current
+      if (!container || !inner) return
+
+      const handleScroll = () => {
+        if (isAdjustingRef.current) return
+
+        const scrollLeft = container.scrollLeft
+        
+        // Calculate the width of one set of items
+        const firstItem = inner.children[1] as HTMLElement // Skip the first padding div
+        if (!firstItem) return
+        
+        const itemWidth = firstItem.offsetWidth
+        const gap = 20
+        const itemWidthWithGap = itemWidth + gap
+        const oneSetWidth = items.length * itemWidthWithGap
+        
+        // Calculate boundaries
+        const middleSetStart = oneSetWidth
+        const middleSetEnd = oneSetWidth * 2
+        const threshold = itemWidthWithGap * 0.5 // Threshold for edge detection
+
+        // If scrolled near the start of middle set, jump to corresponding position in first set
+        if (scrollLeft < middleSetStart - threshold) {
+          isAdjustingRef.current = true
+          const targetScroll = scrollLeft + oneSetWidth
+          requestAnimationFrame(() => {
+            if (container) {
+              container.scrollLeft = targetScroll
+              // Reset flag after a brief delay to allow scroll to settle
+              setTimeout(() => {
+                isAdjustingRef.current = false
+              }, 50)
+            }
+          })
+          return
+        }
+        // If scrolled near the end of middle set, jump to corresponding position in third set
+        else if (scrollLeft > middleSetEnd - threshold) {
+          isAdjustingRef.current = true
+          const targetScroll = scrollLeft - oneSetWidth
+          requestAnimationFrame(() => {
+            if (container) {
+              container.scrollLeft = targetScroll
+              // Reset flag after a brief delay to allow scroll to settle
+              setTimeout(() => {
+                isAdjustingRef.current = false
+              }, 50)
+            }
+          })
+          return
+        }
+      }
+
+      container.addEventListener("scroll", handleScroll, { passive: true })
+
+      return () => {
+        container.removeEventListener("scroll", handleScroll)
+      }
+    }, [items.length])
 
     return (
       <div ref={containerRef} className="text-white -mx-4 px-4 pb-4 overflow-x-auto overflow-y-visible scrollbar-none">
-        <div className="flex gap-5 snap-x snap-mandatory">
+        <div ref={innerRef} className="flex gap-5 snap-x snap-mandatory">
           <div className="shrink-0 w-3" aria-hidden></div>
-          {items.map((item, idx) => (
-            <div key={idx} ref={(el) => { itemRefs.current[idx] = el }} className="snap-center shrink-0" style={{ width: 140 }}>
+          {duplicatedItems.map((item, idx) => (
+            <div key={idx} className="snap-center shrink-0" style={{ width: 140 }}>
               <div
                 className="relative rounded-[26px] aspect-[4/3] overflow-visible"
                 style={{ boxShadow: "0 6px 12px rgba(0,0,0,0.12)" }}
