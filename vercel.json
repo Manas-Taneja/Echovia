@@ -1,0 +1,21 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build/client",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/server"
+    }
+  ],
+  "functions": {
+    "api/server.js": {
+      "runtime": "nodejs20.x",
+      "includeFiles": "build/server/**",
+      "memory": 1024
+    }
+  }
+}
+
